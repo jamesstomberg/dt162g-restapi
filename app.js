@@ -17,6 +17,7 @@ const path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 
 // Set dev mode true / false.
 const dev = false;
@@ -172,6 +173,6 @@ app.delete('/api/posts/:id', async (req, res) => {
 /*                                App port                                    */
 /* -------------------------------------------------------------------------- */
 
-app.listen(3000, () => {
-    console.log('Server is running on port 3000.');
+app.listen(3001, () => {
+    console.log('Server is running on port 3001.');
 });
