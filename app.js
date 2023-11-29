@@ -17,7 +17,7 @@ const path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
+const Auth = require('./utils/auth');
 
 // Set dev mode true / false.
 const dev = false;
@@ -59,7 +59,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 /* -------------------------------------------------------------------------- */
-/*                                API routes                                  */
+/*                             Public API routes                              */
 /* -------------------------------------------------------------------------- */
 
 // Get all posts.
@@ -99,8 +99,19 @@ app.get('/api/posts/:id', async (req, res) => {
     }
 });
 
+/* -------------------------------------------------------------------------- */
+/*                             Protected API routes                           */
+/* -------------------------------------------------------------------------- */
+
+// Get signed in user.
+app.get('/api/dashboard', Auth.authenticateToken, (req, res) => {
+    return res.json({
+        loggedInUserEmail: 'james@test.se'
+    });
+});
+
 // Add a new post.
-app.post('/api/posts', async (req, res) => {
+app.post('/api/posts', Auth.authenticateToken, async (req, res) => {
     const data = req.body;
 
     try {
@@ -125,7 +136,7 @@ app.post('/api/posts', async (req, res) => {
 });
 
 // Update a post by id.
-app.put('/api/posts/:id', async (req, res) => {
+app.put('/api/posts/:id', Auth.authenticateToken, async (req, res) => {
     const { id } = req.params;
     const data = req.body;
 
@@ -152,7 +163,7 @@ app.put('/api/posts/:id', async (req, res) => {
 });
 
 // Delete a post by id.
-app.delete('/api/posts/:id', async (req, res) => {
+app.delete('/api/posts/:id', Auth.authenticateToken, async (req, res) => {
     const { id } = req.params;
 
     try {

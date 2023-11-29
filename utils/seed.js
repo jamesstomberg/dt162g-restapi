@@ -6,7 +6,7 @@
  */
 const mongoose = require('mongoose');
 
-const Post = require('./models/post');
+const Post = require('../models/post');
 
 // Connect to DB.
 mongoose.connect('mongodb+srv://admin-james:QQZOMEfLKbSZKdV7@cluster0.vhab7.mongodb.net/?retryWrites=true&w=majority')
