@@ -18,6 +18,35 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const Auth = require('./utils/auth');
 
+// Domain.
+const serverDomain = 'http://localhost:3001';
+
+// Storage / Images.
+const multer = require('multer');
+const storage = multer.diskStorage({
+    destination: function (req, res, cb) {
+        cb(null, './uploads/');
+    },
+    filename: function (req, postImage, cb) {
+        cb(null, new Date().toISOString() + postImage.originalname);
+    }
+});
+const fileFilter = (req, postImage, cb) => {
+    // Only jpg and png.
+    if (postImage.mimetype === 'image/jpg' || postImage.mimetype === 'image/jpeg' || postImage.mimetype === 'image/png') {
+        cb(null, true);
+    } else {
+        cb(null, false);
+    }
+};
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 1024 * 1024 * 5
+    },
+    fileFilter: fileFilter
+});
+
 // Set dev mode true / false.
 const dev = false;
 
@@ -40,20 +69,20 @@ if (dev === true) {
 // Local DB / mLab.
 if (dbUri) {
     mongoose.connect(dbUri)
-    .then(() => {
-        console.log('Succesfully connected to the database.');
-    })
-    .catch(err => {
-        console.log('Connection to database failed.');
-        console.error(err);
-    })
+        .then(() => {
+            console.log('Succesfully connected to the database.');
+        })
+        .catch(err => {
+            console.log('Connection to database failed.');
+            console.error(err);
+        })
 }
 
 /* -------------------------------------------------------------------------- */
 /*                                App tools                                   */
 /* -------------------------------------------------------------------------- */
 
-//app.use(express.static(__dirname + '/public')); --eventually us for uploaded images??
+app.use('/uploads', express.static('uploads'));
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -70,18 +99,18 @@ app.get('/api/posts', async (req, res) => {
     const pageCount = Math.ceil(posts.length / perPage);
     let page = parseInt(req.query.page);
 
-    if (!page) { 
+    if (!page) {
         page = 1;
     }
 
     if (page > pageCount) {
-      page = pageCount;
+        page = pageCount;
     }
 
     res.json({
-      "page": page,
-      "pageCount": pageCount,
-      "posts": posts.slice(page * perPage - perPage, page * perPage)
+        "page": page,
+        "pageCount": pageCount,
+        "posts": posts.slice(page * perPage - perPage, page * perPage)
     });
 });
 
@@ -102,24 +131,20 @@ app.get('/api/posts/:id', async (req, res) => {
 /*                             Protected API routes                           */
 /* -------------------------------------------------------------------------- */
 
-// Get signed in user.
-app.get('/api/dashboard', Auth.authenticateToken, (req, res) => {
-    return res.json({
-        loggedInUserEmail: 'james@test.se'
-    });
-});
-
 // Add a new post.
-app.post('/api/posts', Auth.authenticateToken, async (req, res) => {
+app.post('/api/posts', upload.single('image'), async (req, res) => {
     const data = req.body;
 
     try {
         const addedPost = await Post.create(
             {
-                postTitle: data.postTitle,
-                postContent: data.postContent,
-                postAuthor: data.postAuthor,
-                postImage: data.postImage
+                postTitle: data.title,
+                postContent: data.content,
+                postAuthor: {
+                    authorName: data.name,
+                    authorEmail: data.email
+                },
+                postImage: serverDomain + '/' + req.file.path
             }
         );
 
