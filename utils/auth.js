@@ -1,3 +1,10 @@
+/**
+ * Auth.js
+ * 
+ * Author: James Stomberg
+ * Email: jast2202@student.miun.se
+ */
+
 const jwt = require('jsonwebtoken');
 const { USERFRONT_PUBLIC_KEY } = require('../settings/environment');
 

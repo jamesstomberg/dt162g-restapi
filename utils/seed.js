@@ -4,6 +4,7 @@
  * Author: James Stomberg
  * Email: jast2202@student.miun.se
  */
+
 const mongoose = require('mongoose');
 
 const Post = require('../models/post');
