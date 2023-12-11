@@ -169,28 +169,51 @@ app.post('/api/posts', Auth.authenticateToken, upload.single('image'), async (re
 });
 
 // Update a post by id.
-app.put('/api/posts/:id', Auth.authenticateToken, async (req, res) => {
+app.put('/api/posts/:id', Auth.authenticateToken, upload.single('image'), async (req, res) => {
     const { id } = req.params;
     const data = req.body;
 
     try {
-        const updatedPost = await Post.findByIdAndUpdate(
-            { _id: id },
-            {
-                postTitle: data.postTitle,
-                postContent: data.postContent,
-                postAuthor: data.postAuthor,
-                postImage: data.postImage
-            }
-        );
+        if (req.file.path) {
+            const updatedPost = await Post.findByIdAndUpdate(
+                { _id: id },
+                {
+                    postTitle: data.postTitle,
+                    postContent: data.postContent,
+                    postAuthor: {
+                        authorName: data.name,
+                        authorEmail: data.email
+                    },
+                    postImage: serverDomain + '/' + req.file.path
+                }
+            );
 
-        if (!updatedPost) {
-            res.status(404).send('ID does not exist.');
-            return;
+            if (!updatedPost) {
+                res.status(404).send('ID does not exist.');
+                return;
+            }
+        } else {
+            const updatedPost = await Post.findByIdAndUpdate(
+                { _id: id },
+                {
+                    postTitle: data.postTitle,
+                    postContent: data.postContent,
+                    postAuthor: {
+                        authorName: data.postAuthor,
+                        authorEmail: data.postAuthor
+                    }
+                }
+            );
+
+            if (!updatedPost) {
+                res.status(404).send('ID does not exist.');
+                return;
+            }
         }
 
         res.status(200).send('Succesfully updated post.');
     } catch (err) {
+        console.log(err);
         res.status(500).send('Something went wrong. Could not update post.');
     }
 });
