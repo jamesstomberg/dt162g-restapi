@@ -82,7 +82,8 @@ if (dbUri) {
 /*                                App tools                                   */
 /* -------------------------------------------------------------------------- */
 
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(__dirname + '/uploads'));
+app.use(express.static(__dirname + '/uploads'));
 app.use(cors());
 app.use(bodyParser.json());
 
