@@ -19,7 +19,7 @@ const mongoose = require('mongoose');
 const Auth = require('./utils/auth');
 
 // Domain.
-const serverDomain = 'https://dt162gexpress.onrender.com:3001';
+const serverDomain = 'https://dt162gexpress.onrender.com/';
 
 // Storage / Images.
 const multer = require('multer');
