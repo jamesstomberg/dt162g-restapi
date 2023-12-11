@@ -19,7 +19,7 @@ const mongoose = require('mongoose');
 const Auth = require('./utils/auth');
 
 // Domain.
-const serverDomain = 'https://dt162gexpress.onrender.com/';
+const serverDomain = 'https://dt162gexpress.onrender.com';
 
 // Storage / Images.
 const multer = require('multer');
@@ -82,8 +82,7 @@ if (dbUri) {
 /*                                App tools                                   */
 /* -------------------------------------------------------------------------- */
 
-app.use('/uploads', express.static(__dirname + '/uploads'));
-app.use(express.static(__dirname + '/uploads'));
+app.use('/uploads', express.static('uploads'));
 app.use(cors());
 app.use(bodyParser.json());
 
