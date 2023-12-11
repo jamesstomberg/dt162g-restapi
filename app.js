@@ -19,7 +19,7 @@ const mongoose = require('mongoose');
 const Auth = require('./utils/auth');
 
 // Domain.
-const serverDomain = 'http://localhost:3001';
+const serverDomain = 'https://dt162gexpress.onrender.com:3001';
 
 // Storage / Images.
 const multer = require('multer');
@@ -239,7 +239,8 @@ app.delete('/api/posts/:id', Auth.authenticateToken, async (req, res) => {
 /* -------------------------------------------------------------------------- */
 /*                                App port                                    */
 /* -------------------------------------------------------------------------- */
+const port = process.env.PORT || 3001;
 
-app.listen(3001, () => {
-    console.log('Server is running on port 3001.');
+app.listen(port, () => {
+    console.log('Server is running on port ' + port + '.');
 });
