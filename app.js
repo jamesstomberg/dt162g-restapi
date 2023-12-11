@@ -175,7 +175,7 @@ app.put('/api/posts/:id', Auth.authenticateToken, upload.single('image'), async 
     const data = req.body;
 
     try {
-        if (req.file.path) {
+        if (req.file && req.file.path) {
             const updatedPost = await Post.findByIdAndUpdate(
                 { _id: id },
                 {
