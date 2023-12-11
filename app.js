@@ -90,12 +90,12 @@ app.use(bodyParser.json());
 /*                             Public API routes                              */
 /* -------------------------------------------------------------------------- */
 
-// Get all posts.
+// Get all posts paginated.
 app.get('/api/posts', async (req, res) => {
     const posts = await Post.find({});
 
     // Pagination. Inspiration from: https://stackoverflow.com/questions/47800245/node-pagination-with-express
-    const perPage = 2;
+    const perPage = 5;
     const pageCount = Math.ceil(posts.length / perPage);
     let page = parseInt(req.query.page);
 
@@ -111,6 +111,15 @@ app.get('/api/posts', async (req, res) => {
         "page": page,
         "pageCount": pageCount,
         "posts": posts.slice(page * perPage - perPage, page * perPage)
+    });
+});
+
+// Get all posts.
+app.get('/api/allposts', async (req, res) => {
+    const posts = await Post.find({});
+
+    res.json({
+        "posts": posts
     });
 });
 
@@ -132,7 +141,7 @@ app.get('/api/posts/:id', async (req, res) => {
 /* -------------------------------------------------------------------------- */
 
 // Add a new post.
-app.post('/api/posts', upload.single('image'), async (req, res) => {
+app.post('/api/posts', Auth.authenticateToken, upload.single('image'), async (req, res) => {
     const data = req.body;
 
     try {
